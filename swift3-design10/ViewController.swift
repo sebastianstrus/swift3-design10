@@ -12,12 +12,16 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var pickUpDayPicker: UIPickerView!
     @IBOutlet weak var dropOffDayPicker: UIPickerView!
+    @IBOutlet weak var totalPriceLabel: UILabel!
     
     var dateModelPicker: DateModelPicker!
     var rotationAngle: CGFloat!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(pickerChanged), name: .pickersChanged, object: nil)
         
         rotationAngle = -90 * (.pi / 180)
         
@@ -37,9 +41,31 @@ class ViewController: UIViewController {
         dropOffDayPicker.dataSource = dateModelPicker
         dropOffDayPicker.selectRow(2, inComponent: 0, animated: true)
         
+        pickerChanged()
+        
     }
 
-
-
+    func pickerChanged() {
+        let start = pickUpDayPicker.selectedRow(inComponent: 0)
+        let end = dropOffDayPicker.selectedRow(inComponent: 0)
+        
+        var totalPrice: Int = 0
+        
+        let correctDates = start <= end
+        
+        if correctDates  {
+            let selectedDates = dateModelPicker.modelData[start...end]
+            print("selectedDates: \(selectedDates)")
+            for date in selectedDates {
+                print("Printing:")
+                print(date.price)
+                totalPrice += Int(date.price.replacingOccurrences(of: "€", with: ""))!
+            }
+            totalPriceLabel.text = "Total price: €\(totalPrice)"
+        }
+        else {
+            totalPriceLabel.text = "Incorrect dates"
+        }
+    }
 }
 

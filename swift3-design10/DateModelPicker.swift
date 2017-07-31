@@ -69,4 +69,9 @@ extension DateModelPicker: UIPickerViewDelegate {
         return view
     }
     
+    // Send information to ViewController
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        NotificationCenter.default.post(name: .pickersChanged, object: self)
+    }
+    
 }
